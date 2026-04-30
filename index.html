@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+  <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DriveTrust Auto — Tulsa & Owasso's Retainer-Based Auto Service</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fff7ed',
+      100: '#ffedd5',
+      200: '#fed7aa',
+      300: '#fdba74',
+      400: '#fb923c',
+      500: '#f97316',
+      600: '#ea580c',
+      700: '#c2410c',
+      800: '#9a3412',
+      900: '#7c2d12',
+      },
+navy: {
+  800: '#1e2a3a',
+  900: '#0f1722',
+  950: '#080d14',
+}
+}
+}
+}
+}
+</script>
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+/* Page transition system */
+  .page {
+    position: absolute;
+    top: 0; left: 0; width: 100%;
+    min-height: 100vh;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-top: 72px;
+  }
+.page.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  position: relative;
+}
+.page.exit-up {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+/* Nav link active state */
+  .nav-link { position: relative; }
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 50%; width: 0; height: 2px;
+  background: #f97316;
+    transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+.nav-link.active::after { width: 100%; }
+.nav-link.active { color: #f97316; }
+    
+    /* Mobile menu */
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  .mobile-menu.open { max-height: 300px; }
+  
+  /* Testimonial cards */
+    .testimonial-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+  .testimonial-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  }
+  
+  /* CTA pulse */
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+  .cta-pulse::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 9999px;
+    border: 2px solid #f97316;
+    animation: pulse-ring 2s ease-out infinite;
+  }
+  
+  /* Service card hover */
+    .service-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+  .service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.12);
+  }
+  
+  /* Floating shapes */
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+  .float-shape {
+    animation: float 6s ease-in-out infinite;
+  }
+  .float-shape-delay { animation-delay: -3s; }
+  
+  /* Scroll fade-in */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Form focus */
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3);
+    }
+  
+  /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: #0f1722;
+        color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 500;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  /* Hero gradient overlay */
+    .hero-gradient {
+      background: linear-gradient(135deg, rgba(15,23,34,0.92) 0%, rgba(30,42,58,0.85) 50%, rgba(249,115,22,0.15) 100%);
+    }
+  </style>
+    </head>
+    <body class="bg-gray-50 text-gray-800 antialiased">
+    
+    <!-- ===== NAVIGATION ===== -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between h-[72px]">
+    <!-- Logo -->
+    <a href="#" onclick="navigateTo('home'); return false;" class="flex items-center gap-2 group">
+    <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center group-hover:bg-brand-600 transition-colors">
+    <i data-lucide="car" class="w-5 h-5 text-white"></i>
+    </div>
+    <div>
+    <span class="text-lg font-bold text-navy-900 leading-none block">DriveTrust</span>
+    <span class="text-[10px] text-brand-500 font-semibold tracking-widest uppercase">Auto Retainer</span>
+    </div>
+    </a>
+    
+    <!-- Desktop Nav -->
+    <div class="hidden md:flex items-center gap-8">
+    <a href="#" onclick="navigateTo('home'); return false;" class="nav-link text-sm font-medium text-gray-600 hover:text-brand-500 transition-colors active" data-nav="home">Home</a>
+    <a href="#" onclick="navigateTo('services'); return false;" class="nav-link text-sm font-medium text-gray-600 hover:text-brand-500 transition-colors" data-nav="services">Our Approach</a>
+    <a href="#" onclick="navigateTo('home', 'testimonials'); return false;" class="nav-link text-sm font-medium text-gray-600 hover:text-brand-500 transition-colors" data-nav="testimonials">Reviews</a>
+    <a href="#" onclick="navigateTo('home', 'contact'); return false;" class="nav-link text-sm font-medium text-gray-600 hover:text-brand-500 transition-colors" data-nav="contact">Contact</a>
+    <a href="tel:+19185551234" class="relative cta-pulse inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold px-5 py-2.5 rounded-full transition-all duration-200 text-sm">
+    <i data-lucide="phone" class="w-4 h-4"></i>
+    (918) 555-1234
+  </a>
+    </div>
+    
+    <!-- Mobile hamburger -->
+    <button id="menuToggle" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors" aria-label="Toggle menu">
+    <i data-lucide="menu" class="w-5 h-5 text-navy-900" id="menuIcon"></i>
+    </button>
+    </div>
+    
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="mobile-menu md:hidden">
+    <div class="pb-4 pt-1 space-y-1">
+    <a href="#" onclick="navigateTo('home'); closeMenu(); return false;" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-brand-50 hover:text-brand-600 font-medium transition-colors" data-nav="home">Home</a>
+    <a href="#" onclick="navigateTo('services'); closeMenu(); return false;" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-brand-50 hover:text-brand-600 font-medium transition-colors" data-nav="services">Our Approach</a>
+    <a href="#" onclick="navigateTo('home', 'testimonials'); closeMenu(); return false;" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-brand-50 hover:text-brand-600 font-medium transition-colors" data-nav="testimonials">Reviews</a>
+    <a href="#" onclick="navigateTo('home', 'contact'); closeMenu(); return false;" class="block px-4 py-3 rounded-xl text-gray-700 hover:bg-brand-50 hover:text-brand-600 font-medium transition-colors" data-nav="contact">Contact</a>
+    <a href="tel:+19185551234" class="flex items-center gap-2 mx-4 mt-2 bg-brand-500 text-white font-semibold px-5 py-3 rounded-full justify-center text-sm">
+    <i data-lucide="phone" class="w-4 h-4"></i>
+    (918) 555-1234
+  </a>
+    </div>
+    </div>
+    </div>
+    </nav>
+    
+    
+    <!-- ===== PAGE: HOME ===== -->
+    <div id="page-home" class="page active">
+    
+    <!-- Hero -->
+    <section class="relative min-h-[92vh] flex items-center overflow-hidden bg-navy-950">
+    <img src="http://static.photos/automotive/1200x630/7" alt="" class="absolute inset-0 w-full h-full object-cover opacity-30">
+    <div class="hero-gradient absolute inset-0"></div>
+    
+    <!-- Floating shapes -->
+    <div class="absolute top-20 right-10 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl float-shape"></div>
+    <div class="absolute bottom-20 left-10 w-48 h-48 bg-brand-400/10 rounded-full blur-3xl float-shape float-shape-delay"></div>
+    
+    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-20 w-full">
+    <div class="max-w-2xl">
+    <div class="inline-flex items-center gap-2 bg-brand-500/20 border border-brand-500/30 text-brand-300 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 backdrop-blur-sm">
+    <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+    Tulsa & Owasso, Oklahoma
+  </div>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-6">
+    Your Car's Care,<br>
+            <span class="text-brand-400">One Simple Retainer.</span>
+          </h1>
+          <p class="text-lg sm:text-xl text-gray-300 mb-8 leading-relaxed max-w-lg">
+            Oil changes, periodic maintenance, and peace of mind — all included in a straightforward monthly plan. No surprises, no upsells.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href="tel:+19185551234" class="inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold px-7 py-4 rounded-full transition-all duration-200 text-base shadow-lg shadow-brand-500/25">
+              <i data-lucide="phone" class="w-5 h-5"></i>
+              Call (918) 555-1234
+            </a>
+            <button onclick="navigateTo('services')" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-7 py-4 rounded-full transition-all duration-200 border border-white/20 backdrop-blur-sm">
+              Learn Our Approach
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Trust badges -->
+          <div class="flex flex-wrap gap-6 mt-12 pt-8 border-t border-white/10">
+            <div class="flex items-center gap-2 text-gray-400 text-sm">
+              <i data-lucide="shield-check" class="w-5 h-5 text-brand-400"></i>
+              No Upsell Guarantee
+            </div>
+            <div class="flex items-center gap-2 text-gray-400 text-sm">
+              <i data-lucide="repeat" class="w-5 h-5 text-brand-400"></i>
+              All Standard Services Included
+            </div>
+            <div class="flex items-center gap-2 text-gray-400 text-sm">
+              <i data-lucide="heart-handshake" class="w-5 h-5 text-brand-400"></i>
+              Honest Recommendations
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-20 sm:py-28 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16 fade-up">
+          <span class="inline-block text-brand-500 font-semibold text-sm tracking-wider uppercase mb-3">Simple & Transparent</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-navy-900 mb-4">How the Retainer Works</h2>
+          <p class="text-gray-500 max-w-xl mx-auto">One monthly payment covers every standard service your vehicle needs. No hidden fees. No inflated recommendations.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-6 lg:gap-8 fade-up">
+          <div class="text-center p-8 rounded-2xl bg-gray-50 hover:bg-brand-50 transition-colors group">
+            <div class="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="credit-card" class="w-7 h-7 text-brand-600 group-hover:text-white transition-colors"></i>
+            </div>
+            <div class="text-brand-500 font-bold text-sm mb-2">Step 1</div>
+            <h3 class="text-xl font-bold text-navy-900 mb-2">Subscribe</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">Pick a retainer plan based on your vehicle. One flat monthly rate — that's it.</p>
+    </div>
+    <div class="text-center p-8 rounded-2xl bg-gray-50 hover:bg-brand-50 transition-colors group">
+    <div class="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:bg-brand-500 transition-colors">
+    <i data-lucide="wrench" class="w-7 h-7 text-brand-600 group-hover:text-white transition-colors"></i>
+    </div>
+    <div class="text-brand-500 font-bold text-sm mb-2">Step 2</div>
+    <h3 class="text-xl font-bold text-navy-900 mb-2">We Handle It</h3>
+    <p class="text-gray-500 text-sm leading-relaxed">Oil changes, filter replacements, fluid top-offs, inspections — all standard maintenance, automatically.</p>
+    </div>
+    <div class="text-center p-8 rounded-2xl bg-gray-50 hover:bg-brand-50 transition-colors group">
+    <div class="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:bg-brand-500 transition-colors">
+    <i data-lucide="check-circle-2" class="w-7 h-7 text-brand-600 group-hover:text-white transition-colors"></i>
+    </div>
+    <div class="text-brand-500 font-bold text-sm mb-2">Step 3</div>
+    <h3 class="text-xl font-bold text-navy-900 mb-2">Drive Easy</h3>
+    <p class="text-gray-500 text-sm leading-relaxed">Need something beyond standard service? We evaluate, refer, and coordinate — honestly.</p>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <!-- Included Services -->
+    <section class="py-20 sm:py-28 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-16 fade-up">
+    <span class="inline-block text-brand-500 font-semibold text-sm tracking-wider uppercase mb-3">What's Covered</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-navy-900 mb-4">Standard Services Included</h2>
+          <p class="text-gray-500 max-w-xl mx-auto">Every routine maintenance item your car needs is built right into your retainer.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 fade-up">
+          <div class="service-card bg-white p-6 rounded-2xl border border-gray-100">
+            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4">
+              <i data-lucide="droplets" class="w-6 h-6 text-brand-500"></i>
+            </div>
+            <h3 class="font-bold text-navy-900 mb-1">Oil Changes</h3>
+            <p class="text-gray-400 text-sm">Full synthetic & conventional, on schedule.</p>
+          </div>
+          <div class="service-card bg-white p-6 rounded-2xl border border-gray-100">
+            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4">
+              <i data-lucide="filter" class="w-6 h-6 text-brand-500"></i>
+            </div>
+            <h3 class="font-bold text-navy-900 mb-1">Filter Replacements</h3>
+            <p class="text-gray-400 text-sm">Air, cabin, oil, and fuel filters as needed.</p>
+          </div>
+          <div class="service-card bg-white p-6 rounded-2xl border border-gray-100">
+            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4">
+              <i data-lucide="gauge" class="w-6 h-6 text-brand-500"></i>
+            </div>
+            <h3 class="font-bold text-navy-900 mb-1">Fluid Services</h3>
+            <p class="text-gray-400 text-sm">Brake, coolant, transmission, and power steering.</p>
+          </div>
+          <div class="service-card bg-white p-6 rounded-2xl border border-gray-100">
+            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4">
+              <i data-lucide="scan-search" class="w-6 h-6 text-brand-500"></i>
+            </div>
+            <h3 class="font-bold text-navy-900 mb-1">Multi-Point Inspections</h3>
+            <p class="text-gray-400 text-sm">Thorough checks at every visit — no guesswork.</p>
+          </div>
+          <div class="service-card bg-white p-6 rounded-2xl border border-gray-100">
+            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4">
+              <i data-lucide="disc-3" class="w-6 h-6 text-brand-500"></i>
+            </div>
+            <h3 class="font-bold text-navy-900 mb-1">Brake Inspections</h3>
+            <p class="text-gray-400 text-sm">Pad, rotor, and system checks routinely done.</p>
+          </div>
+          <div class="service-card bg-white p-6 rounded-2xl border border-gray-100">
+            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4">
+              <i data-lucide="tire" class="w-6 h-6 text-brand-500"></i>
+            </div>
+            <h3 class="font-bold text-navy-900 mb-1">Tire Rotations</h3>
+            <p class="text-gray-400 text-sm">Regular rotation for even wear and longer life.</p>
+          </div>
+          <div class="service-card bg-white p-6 rounded-2xl border border-gray-100">
+            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4">
+              <i data-lucide="battery-charging" class="w-6 h-6 text-brand-500"></i>
+            </div>
+            <h3 class="font-bold text-navy-900 mb-1">Battery Testing</h3>
+            <p class="text-gray-400 text-sm">Load testing and terminal inspections included.</p>
+          </div>
+          <div class="service-card bg-white p-6 rounded-2xl border border-gray-100">
+            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4">
+              <i data-lucide="lightbulb" class="w-6 h-6 text-brand-500"></i>
+            </div>
+            <h3 class="font-bold text-navy-900 mb-1">Bulb Replacements</h3>
+            <p class="text-gray-400 text-sm">Headlights, tail lights, and interior bulbs swapped.</p>
+          </div>
+        </div>
+
+        <div class="text-center mt-10 fade-up">
+          <button onclick="navigateTo('services')" class="inline-flex items-center gap-2 text-brand-500 hover:text-brand-600 font-semibold transition-colors">
+            Need something beyond standard service?
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="section-testimonials" class="py-20 sm:py-28 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16 fade-up">
+          <span class="inline-block text-brand-500 font-semibold text-sm tracking-wider uppercase mb-3">Real Feedback</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-navy-900 mb-4">What Our Clients Say</h2>
+          <p class="text-gray-500 max-w-xl mx-auto">The most common thing we hear? Relief that we only recommend what's actually necessary.</p>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-6 fade-up">
+    <!-- Testimonial 1 -->
+    <div class="testimonial-card bg-gray-50 p-7 rounded-2xl border border-gray-100 relative">
+    <div class="absolute top-6 right-6 text-brand-200">
+    <i data-lucide="quote" class="w-8 h-8"></i>
+    </div>
+    <div class="flex items-center gap-1 mb-4">
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    </div>
+    <p class="text-gray-600 leading-relaxed mb-6 text-sm">"I've been to so many shops that find 'problems' every visit. DriveTrust evaluated my car and told me exactly what it needed — nothing more. They even recommended a trusted shop for my AC issue instead of upselling me. Finally, honest auto care."</p>
+    <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
+    <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center font-bold text-brand-600">SR</div>
+    <div>
+    <div class="font-semibold text-navy-900 text-sm">Sarah R.</div>
+    <div class="text-gray-400 text-xs">Tulsa, OK</div>
+    </div>
+    </div>
+    </div>
+    
+    <!-- Testimonial 2 -->
+    <div class="testimonial-card bg-gray-50 p-7 rounded-2xl border border-gray-100 relative">
+    <div class="absolute top-6 right-6 text-brand-200">
+    <i data-lucide="quote" class="w-8 h-8"></i>
+    </div>
+    <div class="flex items-center gap-1 mb-4">
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    </div>
+    <p class="text-gray-600 leading-relaxed mb-6 text-sm">"The retainer model is genius. I pay one price and all my routine stuff is handled. What really blew me away was when I needed transmission work — they evaluated it, explained it in plain English, and connected me with a reputable specialist. No markup. Just honesty."</p>
+    <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
+    <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center font-bold text-brand-600">MP</div>
+    <div>
+    <div class="font-semibold text-navy-900 text-sm">Marcus P.</div>
+    <div class="text-gray-400 text-xs">Owasso, OK</div>
+    </div>
+    </div>
+    </div>
+    
+    <!-- Testimonial 3 -->
+    <div class="testimonial-card bg-gray-50 p-7 rounded-2xl border border-gray-100 relative">
+    <div class="absolute top-6 right-6 text-brand-200">
+    <i data-lucide="quote" class="w-8 h-8"></i>
+    </div>
+    <div class="flex items-center gap-1 mb-4">
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    <i data-lucide="star" class="w-4 h-4 fill-brand-400 text-brand-400"></i>
+    </div>
+    <p class="text-gray-600 leading-relaxed mb-6 text-sm">"As a single mom, I always dreaded going to the mechanic. DriveTrust changed that completely. They only recommend what's truly necessary and when I needed major brake work, they referred me to someone fair and reliable. I trust them completely with my family's vehicles."</p>
+    <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
+    <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center font-bold text-brand-600">JL</div>
+    <div>
+    <div class="font-semibold text-navy-900 text-sm">Jennifer L.</div>
+    <div class="text-gray-400 text-xs">Tulsa, OK</div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <!-- CTA - Contact Banner -->
+    <section id="section-contact" class="py-20 sm:py-28 bg-navy-950 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid lg:grid-cols-2 gap-12 items-start">
+    <div class="fade-up">
+    <span class="inline-block text-brand-400 font-semibold text-sm tracking-wider uppercase mb-3">Get Started</span>
+    <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Ready for Honest Auto Care?</h2>
+    <p class="text-gray-400 leading-relaxed mb-8">Call us directly or fill out the form and we'll reach out. No pressure, no sales pitch — just a conversation about your vehicle.</p>
+
+            <a href="tel:+19185551234" class="inline-flex items-center gap-3 bg-brand-500 hover:bg-brand-600 text-white font-bold px-7 py-4 rounded-full transition-all duration-200 shadow-lg shadow-brand-500/25 text-lg mb-8">
+              <i data-lucide="phone" class="w-5 h-5"></i>
+              (918) 555-1234
+            </a>
+
+            <div class="space-y-4 mt-6">
+              <div class="flex items-center gap-3 text-gray-400">
+                <i data-lucide="map-pin" class="w-5 h-5 text-brand-400"></i>
+                Serving Tulsa & Owasso, Oklahoma
+              </div>
+              <div class="flex items-center gap-3 text-gray-400">
+                <i data-lucide="clock" class="w-5 h-5 text-brand-400"></i>
+                Mon–Sat: 7:00 AM – 6:00 PM
+              </div>
+              <div class="flex items-center gap-3 text-gray-400">
+                <i data-lucide="mail" class="w-5 h-5 text-brand-400"></i>
+                hello@drivetrustauto.com
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Form -->
+          <div class="fade-up">
+            <form id="contactForm" class="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-6 sm:p-8 space-y-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Full Name</label>
+                <input type="text" name="name" required placeholder="John Smith" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-brand-500 transition-colors text-sm">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Phone Number</label>
+                <input type="tel" name="phone" required placeholder="(918) 555-0000" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-brand-500 transition-colors text-sm">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+                <input type="email" name="email" placeholder="john@email.com" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-brand-500 transition-colors text-sm">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Vehicle Info</label>
+                <input type="text" name="vehicle" placeholder="2023 Toyota Camry" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-brand-500 transition-colors text-sm">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1.5">Message</label>
+                <textarea name="message" rows="3" placeholder="Tell us about your vehicle needs…" class="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-brand-500 transition-colors resize-none text-sm"></textarea>
+              </div>
+              <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3.5 rounded-full transition-all duration-200 text-sm flex items-center justify-center gap-2">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-navy-900 border-t border-white/5 py-8">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+            <i data-lucide="car" class="w-4 h-4 text-white"></i>
+          </div>
+          <span class="text-white font-bold">DriveTrust Auto</span>
+        </div>
+        <p class="text-gray-500 text-sm text-center">© 2026 DriveTrust Auto. All rights reserved. Tulsa & Owasso, OK.</p>
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-gray-500 hover:text-brand-400 transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+          <a href="#" class="text-gray-500 hover:text-brand-400 transition-colors"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+          <a href="#" class="text-gray-500 hover:text-brand-400 transition-colors"><i data-lucide="message-circle" class="w-5 h-5"></i></a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- ===== PAGE: SERVICES (Our Approach) ===== -->
+  <div id="page-services" class="page">
+
+    <!-- Hero -->
+    <section class="relative py-20 sm:py-28 overflow-hidden bg-navy-950">
+      <div class="absolute inset-0 bg-gradient-to-br from-navy-950 via-navy-900 to-brand-900/20"></div>
+      <div class="absolute top-10 left-10 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl float-shape"></div>
+      <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center">
+        <span class="inline-flex items-center gap-2 bg-brand-500/20 border border-brand-500/30 text-brand-300 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 backdrop-blur-sm">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          Beyond Standard Service
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-white mb-6">We'll Help With<br><span class="text-brand-400">Anything Your Car Needs</span></h1>
+    <p class="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">Not every issue falls under routine maintenance. That's exactly why we don't stop at oil changes — we evaluate, advise, and connect you with trusted specialists for whatever comes up.</p>
+    </div>
+    </section>
+    
+    <!-- The Philosophy -->
+    <section class="py-20 sm:py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <div class="fade-up">
+    <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+    <img src="http://static.photos/automotive/640x360/22" alt="Mechanic evaluating vehicle" class="w-full h-72 sm:h-80 object-cover">
+    <div class="absolute inset-0 bg-gradient-to-t from-navy-950/60 to-transparent"></div>
+    <div class="absolute bottom-5 left-5 bg-brand-500 text-white font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2">
+    <i data-lucide="eye" class="w-4 h-4"></i>
+    Evaluate First
+  </div>
+    </div>
+    </div>
+    <div class="fade-up">
+    <span class="inline-block text-brand-500 font-semibold text-sm tracking-wider uppercase mb-3">Our Philosophy</span>
+    <h2 class="text-2xl sm:text-3xl font-extrabold text-navy-900 mb-5">Honest Evaluation, Not Upselling</h2>
+    <p class="text-gray-500 leading-relaxed mb-6">Most shops have a financial incentive to find problems. We don't. Your retainer covers standard services, so there's zero reason for us to invent issues. If something's wrong, we'll tell you. If it's fine, we'll tell you that too.</p>
+    <div class="space-y-4">
+    <div class="flex items-start gap-3">
+    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+    </div>
+    <div>
+    <h4 class="font-semibold text-navy-900 text-sm">Transparent Diagnostics</h4>
+    <p class="text-gray-400 text-sm">We show you exactly what we find — good or bad.</p>
+    </div>
+    </div>
+    <div class="flex items-start gap-3">
+    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+    </div>
+    <div>
+    <h4 class="font-semibold text-navy-900 text-sm">No Financial Conflict of Interest</h4>
+    <p class="text-gray-400 text-sm">We're paid by retainer, not by finding "problems."</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-navy-900 text-sm">Plain-English Explanations</h4>
+                  <p class="text-gray-400 text-sm">You'll understand what's happening before you decide.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The Process -->
+    <section class="py-20 sm:py-24 bg-gray-50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16 fade-up">
+          <span class="inline-block text-brand-500 font-semibold text-sm tracking-wider uppercase mb-3">The Process</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-navy-900 mb-4">Need Something Beyond Maintenance?</h2>
+          <p class="text-gray-500 max-w-xl mx-auto">Here's how we handle anything your vehicle needs — without the typical shop runaround.</p>
+    </div>
+    
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 fade-up">
+    <div class="relative bg-white p-6 rounded-2xl border border-gray-100 text-center group hover:border-brand-200 transition-colors">
+    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-7 h-7 bg-brand-500 rounded-full flex items-center justify-center text-white font-bold text-xs">1</div>
+    <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+    <i data-lucide="search" class="w-6 h-6 text-brand-500"></i>
+    </div>
+    <h3 class="font-bold text-navy-900 mb-2">You Tell Us</h3>
+    <p class="text-gray-400 text-sm leading-relaxed">Report an issue or ask about a concern. No question is too small.</p>
+    </div>
+    <div class="relative bg-white p-6 rounded-2xl border border-gray-100 text-center group hover:border-brand-200 transition-colors">
+    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-7 h-7 bg-brand-500 rounded-full flex items-center justify-center text-white font-bold text-xs">2</div>
+    <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+    <i data-lucide="clipboard-check" class="w-6 h-6 text-brand-500"></i>
+    </div>
+    <h3 class="font-bold text-navy-900 mb-2">We Evaluate</h3>
+    <p class="text-gray-400 text-sm leading-relaxed">Our technician diagnoses the issue honestly and explains your options.</p>
+    </div>
+    <div class="relative bg-white p-6 rounded-2xl border border-gray-100 text-center group hover:border-brand-200 transition-colors">
+    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-7 h-7 bg-brand-500 rounded-full flex items-center justify-center text-white font-bold text-xs">3</div>
+    <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+    <i data-lucide="users" class="w-6 h-6 text-brand-500"></i>
+    </div>
+    <h3 class="font-bold text-navy-900 mb-2">We Recommend</h3>
+    <p class="text-gray-400 text-sm leading-relaxed">We match you with a vetted, reputable specialist for the specific repair.</p>
+    </div>
+    <div class="relative bg-white p-6 rounded-2xl border border-gray-100 text-center group hover:border-brand-200 transition-colors">
+    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-7 h-7 bg-brand-500 rounded-full flex items-center justify-center text-white font-bold text-xs">4</div>
+    <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+    <i data-lucide="handshake" class="w-6 h-6 text-brand-500"></i>
+    </div>
+    <h3 class="font-bold text-navy-900 mb-2">We Coordinate</h3>
+    <p class="text-gray-400 text-sm leading-relaxed">We facilitate the connection, follow up, and make sure it's done right.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What We Can Help With -->
+    <section class="py-20 sm:py-24 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16 fade-up">
+          <span class="inline-block text-brand-500 font-semibold text-sm tracking-wider uppercase mb-3">We've Got Connections</span>
+    <h2 class="text-3xl sm:text-4xl font-extrabold text-navy-900 mb-4">Any Service, One Call Away</h2>
+    <p class="text-gray-500 max-w-xl mx-auto">From transmissions to body work, we'll evaluate the situation and connect you with a trusted local professional.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 fade-up">
+          <div class="flex items-center gap-4 bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-brand-200 transition-colors group">
+            <div class="w-11 h-11 bg-brand-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="cog" class="w-5 h-5 text-brand-500 group-hover:text-white transition-colors"></i>
+            </div>
+            <span class="font-medium text-navy-900 text-sm">Transmission Repair</span>
+          </div>
+          <div class="flex items-center gap-4 bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-brand-200 transition-colors group">
+            <div class="w-11 h-11 bg-brand-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="wind" class="w-5 h-5 text-brand-500 group-hover:text-white transition-colors"></i>
+            </div>
+            <span class="font-medium text-navy-900 text-sm">AC & Heating</span>
+          </div>
+          <div class="flex items-center gap-4 bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-brand-200 transition-colors group">
+            <div class="w-11 h-11 bg-brand-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="zap" class="w-5 h-5 text-brand-500 group-hover:text-white transition-colors"></i>
+            </div>
+            <span class="font-medium text-navy-900 text-sm">Electrical Systems</span>
+          </div>
+          <div class="flex items-center gap-4 bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-brand-200 transition-colors group">
+            <div class="w-11 h-11 bg-brand-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="car" class="w-5 h-5 text-brand-500 group-hover:text-white transition-colors"></i>
+            </div>
+            <span class="font-medium text-navy-900 text-sm">Body & Paint</span>
+          </div>
+          <div class="flex items-center gap-4 bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-brand-200 transition-colors group">
+            <div class="w-11 h-11 bg-brand-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="settings" class="w-5 h-5 text-brand-500 group-hover:text-white transition-colors"></i>
+            </div>
+            <span class="font-medium text-navy-900 text-sm">Engine Diagnostics</span>
+          </div>
+          <div class="flex items-center gap-4 bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-brand-200 transition-colors group">
+            <div class="w-11 h-11 bg-brand-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="circle-dollar-sign" class="w-5 h-5 text-brand-500 group-hover:text-white transition-colors"></i>
+            </div>
+            <span class="font-medium text-navy-900 text-sm">Pre-Purchase Inspection</span>
+          </div>
+          <div class="flex items-center gap-4 bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-brand-200 transition-colors group">
+            <div class="w-11 h-11 bg-brand-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="shield" class="w-5 h-5 text-brand-500 group-hover:text-white transition-colors"></i>
+            </div>
+            <span class="font-medium text-navy-900 text-sm">Safety Inspections</span>
+          </div>
+          <div class="flex items-center gap-4 bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-brand-200 transition-colors group">
+            <div class="w-11 h-11 bg-brand-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="thermometer" class="w-5 h-5 text-brand-500 group-hover:text-white transition-colors"></i>
+            </div>
+            <span class="font-medium text-navy-900 text-sm">Cooling System</span>
+          </div>
+          <div class="flex items-center gap-4 bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-brand-200 transition-colors group">
+            <div class="w-11 h-11 bg-brand-50 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-brand-500 transition-colors">
+              <i data-lucide="help-circle" class="w-5 h-5 text-brand-500 group-hover:text-white transition-colors"></i>
+            </div>
+            <span class="font-medium text-navy-900 text-sm">…Anything Else You Need</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust section -->
+    <section class="py-20 sm:py-24 bg-gray-50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="bg-navy-950 rounded-3xl p-8 sm:p-12 lg:p-16 text-center relative overflow-hidden fade-up">
+          <div class="absolute top-0 left-0 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/2"></div>
+          <div class="relative z-10">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mb-5">We're Not a Shop.<br>We're <span class="text-brand-400">Your Advocate.</span></h2>
+            <p class="text-gray-400 max-w-xl mx-auto mb-8 leading-relaxed">Shops profit from finding problems. We profit from keeping you happy. That alignment changes everything. Your retainer means we only recommend what you actually need — because our revenue doesn't depend on squeezing in extra repairs.</p>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+    <a href="tel:+19185551234" class="inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold px-8 py-4 rounded-full transition-all duration-200 shadow-lg shadow-brand-500/25">
+    <i data-lucide="phone" class="w-5 h-5"></i>
+    Call (918) 555-1234
+  </a>
+    <button onclick="navigateTo('home', 'contact')" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-8 py-4 rounded-full transition-all duration-200 border border-white/20">
+    <i data-lucide="message-square" class="w-5 h-5"></i>
+    Contact Us
+  </button>
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <!-- Footer (duplicate for services page) -->
+    <footer class="bg-navy-900 border-t border-white/5 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+    <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
+    <i data-lucide="car" class="w-4 h-4 text-white"></i>
+    </div>
+    <span class="text-white font-bold">DriveTrust Auto</span>
+    </div>
+    <p class="text-gray-500 text-sm text-center">© 2026 DriveTrust Auto. All rights reserved. Tulsa & Owasso, OK.</p>
+    <div class="flex items-center gap-4">
+    <a href="#" class="text-gray-500 hover:text-brand-400 transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+    <a href="#" class="text-gray-500 hover:text-brand-400 transition-colors"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+    <a href="#" class="text-gray-500 hover:text-brand-400 transition-colors"><i data-lucide="message-circle" class="w-5 h-5"></i></a>
+    </div>
+    </div>
+    </footer>
+    </div>
+    
+    
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+    <div class="flex items-center gap-3">
+    <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+    <span id="toastMsg">Message sent successfully!</span>
+    </div>
+    </div>
+    
+    
+    <script>
+    // ===== PAGE NAVIGATION SYSTEM =====
+    let currentPage = 'home';
+  
+  function navigateTo(page, section) {
+    if (currentPage === page && !section) return;
+    
+    const currentEl = document.getElementById(`page-${currentPage}`);
+    const targetEl = document.getElementById(`page-${page}`);
+    
+    if (!targetEl) return;
+    
+    // Exit current page
+    currentEl.classList.remove('active');
+    currentEl.classList.add('exit-up');
+    
+    // Enter new page
+    targetEl.classList.add('active');
+    
+    // Clean up exit animation
+    setTimeout(() => {
+      currentEl.classList.remove('exit-up');
+    }, 400);
+    
+    currentPage = page;
+    
+    // Update nav active states
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.classList.toggle('active', link.dataset.nav === page || (section && link.dataset.nav === section));
+    });
+    
+    // Scroll to top or to section
+    if (section) {
+      // Switch to home first if needed, then scroll
+      if (page !== 'home') {
+        // Already handled above
+      }
+      setTimeout(() => {
+        const sectionEl = document.getElementById(`section-${section}`);
+        if (sectionEl) {
+          sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    
+    // Re-trigger fade-up animations on new page
+    setTimeout(() => observeFadeElements(), 200);
+  }
+  
+  // ===== MOBILE MENU =====
+    const menuToggle = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  let menuOpen = false;
+  
+  menuToggle.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    mobileMenu.classList.toggle('open', menuOpen);
+  });
+  
+  function closeMenu() {
+    menuOpen = false;
+    mobileMenu.classList.remove('open');
+  }
+  
+  // ===== SCROLL FADE-IN =====
+    function observeFadeElements() {
+      const fadeEls = document.querySelectorAll('.fade-up');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      
+      fadeEls.forEach(el => {
+        // Reset if not visible
+        if (!el.classList.contains('visible')) {
+          observer.observe(el);
+        }
+      });
+    }
+  
+  // ===== NAVBAR SHADOW ON SCROLL =====
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 10) {
+        navbar.classList.add('shadow-md');
+      } else {
+        navbar.classList.remove('shadow-md');
+      }
+    });
+  
+  // ===== CONTACT FORM =====
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const name = form.querySelector('[name="name"]').value;
+      
+      // Show toast
+      showToast(`Thanks, ${name}! We'll be in touch soon.`);
+      
+      // Reset form
+      form.reset();
+    });
+  
+  // ===== TOAST =====
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+  
+  // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      observeFadeElements();
+    });
+  </script>
+    </body>
+    </html>
